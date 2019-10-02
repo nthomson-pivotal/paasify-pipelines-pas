@@ -25,12 +25,11 @@ resources:
     backend_type: s3
     backend_config:
       bucket: ((s3_artifact_bucket))
-      key: ((backend_key))/terraform.tfstate
+      key: ((env_name))/terraform.tfstate
       access_key: ((s3_access_key_id))
       secret_key: ((s3_secret_access_key))
     vars:
       env_name: ((env_name))
-      backend_key: ((env_name))
       dns_suffix: ((dns_suffix))
       region: ((region))
       ops_manager_ami: ""
@@ -117,10 +116,8 @@ jobs:
     - get: platform-automation-image
       params: {unpack: true}
     - get: terraform-state
-      trigger: true
       passed: [terraform]
     - get: configuration-source
-      trigger: true
       passed: [terraform]
     - get: vm-state
   - task: interpolate-global
