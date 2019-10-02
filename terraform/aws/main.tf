@@ -33,6 +33,6 @@ module "ns_record" {
   source = "../paving-pas/aws/modules/add_ns_to_hosted_zone"
 
   top_level_zone_id = data.aws_route53_zone.selected.zone_id
-  zone_name         = ${local.base_domain}
+  zone_name         = local.base_domain
   name_servers      = module.infra.name_servers
 }
