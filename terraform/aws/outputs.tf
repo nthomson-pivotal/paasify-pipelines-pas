@@ -3,7 +3,8 @@ output "opsman_username" {
 }
 
 output "opsman_password" {
-  value = local.opsman_password
+  value       = local.opsman_password
+  sensitive   = true
 }
 
 output "opsman_decryption_passphrase" {
