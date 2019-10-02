@@ -49,6 +49,7 @@ resources:
   source:
     uri: ((configuration_source))
     branch: master
+    private_key: ((git_private_key.private_key))
 
 - name: platform-automation-tasks
   type: s3
