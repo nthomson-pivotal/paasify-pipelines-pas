@@ -1,0 +1,67 @@
+product-name: cf
+product-properties:
+  .cloud_controller.system_domain:
+    value: {{ (ds "data").sys_domain }}
+  .cloud_controller.apps_domain:
+    value: {{ (ds "data").apps_domain }}
+  .ha_proxy.skip_cert_verify:
+    value: true
+  .properties.haproxy_forward_tls:
+    value: disable
+  .properties.security_acknowledgement:
+    value: X
+  .mysql_monitor.recipient_email:
+    value: nobody@localhost
+  .properties.credhub_key_encryption_passwords:
+    value:
+    - name: default
+      primary: true
+      provider: internal
+      key:
+        secret: askdnasoidansfiopanskflasf
+  .properties.networking_poe_ssl_certs:
+    value:
+    - certificate:
+        cert_pem: |
+{{indent 8 (ds "data").tls_cert}}
+{{end}}
+        private_key_pem:
+{{indent 8 (ds "data").tls_cert_key}}
+{{end}}
+      name: default
+  .uaa.service_provider_key_credentials:
+    value:
+        cert_pem: |
+{{indent 8 (ds "data").tls_cert}}
+{{end}}
+        private_key_pem:
+{{indent 8 (ds "data").tls_cert_key}}
+{{end}}
+network-properties:
+  network:
+    name: pas
+  other_availability_zones:
+    {{range (ds "data").azs}}
+    - name: {{.}}
+    {{end}}
+  singleton_availability_zone:
+    name: {{index (ds "data").azs 0}}
+resource-config:
+  control:
+    elb_names:
+    {{range (ds "data").ssh_target_groups}}
+    - alb:{{.}}
+    {{end}}
+    additional_vm_extensions: [ssh_lb_security_groups]
+  router:
+    elb_names:
+    {{range (ds "data").web_target_groups}}
+    - alb:{{.}}
+    {{end}}
+    additional_vm_extensions: [web_lb_security_groups]
+  compute:
+    instances: 1
+  blobstore:
+    instances: 0
+  mysql_monitor:
+    instances: 0
