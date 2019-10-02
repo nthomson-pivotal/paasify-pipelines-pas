@@ -49,7 +49,7 @@ module "infra" {
 
   internetless = var.internetless
 
-  hosted_zone = var.hosted_zone
+  hosted_zone = data.aws_route53_zone.selected.zone_id
   dns_suffix  = var.dns_suffix
   use_route53 = var.use_route53
 

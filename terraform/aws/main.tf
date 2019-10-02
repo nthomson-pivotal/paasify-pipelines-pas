@@ -12,3 +12,7 @@ resource "random_string" "opsman_decryption_passphrase" {
   length  = 16
   special = false
 }
+
+data "aws_route53_zone" "selected" {
+  name = "${var.dns_suffix}."
+}
