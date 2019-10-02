@@ -8,7 +8,6 @@ image_resource:
 inputs:
   - name: paasify-pipelines-pas
   - name: terraform-state
-  - name: templates
 outputs:
   - name: interpolated-templates
 run:

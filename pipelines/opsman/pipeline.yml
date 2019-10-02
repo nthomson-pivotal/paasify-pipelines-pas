@@ -99,6 +99,7 @@ jobs:
   serial: true
   plan:
   - aggregate:
+    - get: pipelines-source
     - get: terraform-state
       trigger: true
       passed: [terraform]
@@ -115,13 +116,13 @@ jobs:
               echo "name: $(cat terraform-state/name)"
               echo "metadata: $(cat terraform-state/metadata)"
   - task: interpolate-config
-    file: pcf-automation-source/tasks/interpolate.yml
+    file: pipelines-source/tasks/interpolate.yml
     input_mapping:
-      config: configuration
-      terraform-output: env-state-aws
-      certificates: certificates
+      paasify-pipelines-pas: pipelines-source
+      templates: pipelines-source
+      terraform-state: terraform-state
     output_mapping:
-      interpolated-config: configuration-interpolated
+      interpolated-config: templates-interpolated
   #- task: download-product
   #  image: platform-automation-image
   #  file: platform-automation-tasks/tasks/download-product.yml
