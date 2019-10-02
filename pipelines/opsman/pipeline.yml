@@ -19,9 +19,8 @@ resource_types:
     tag: 1.0.0
 
 resources:
-- name: env-state-aws
+- name: terraform-state
   type: terraform
-  icon: alpha-t-box
   source:
     backend_type: s3
     backend_config:
@@ -32,28 +31,27 @@ resources:
       secret_key: ((s3_secret_access_key))
     vars:
       env_name: ((foundation))
-      dns_suffix: ((terraform.aws.dns_suffix))
-      hosted_zone: ((terraform.aws.hosted_zone))
+      dns_suffix: ((dns_suffix))
       region: ((region))
-      availability_zones: ((terraform.aws.availability_zones))
-      rds_instance_count: ((terraform.aws.rds_instance_count))
-
-      iam_users: false
-      ops_manager_vm: false
     env:
-      AWS_ACCESS_KEY_ID: ((secrets.access_key_id))
-      AWS_SECRET_ACCESS_KEY: ((secrets.secret_access_key))
+      AWS_ACCESS_KEY_ID: ((admin_access_key_id))
+      AWS_SECRET_ACCESS_KEY: ((admin_secret_access_key))
       AWS_DEFAULT_REGION: ((region))
 
-credhub-interpolate: &credhub-interpolate
-  image: platform-automation-image
-  file: platform-automation-tasks/tasks/credhub-interpolate.yml
-  input_mapping:
-    files: configuration
-  params:
-    CREDHUB_SERVER: ((credhub.server))
-    CREDHUB_CA_CERT: ((credhub.ca_cert))
-    CREDHUB_CLIENT: ((credhub.client))
-    CREDHUB_SECRET: ((credhub.secret))
-    PREFIX: /concourse/((foundation))
-    INTERPOLATION_PATHS: ((credhub.interpolate_folders))
+- name: pipelines-source
+  type: git
+  source:
+    uri: git@github.com:nthomson-pivotal/paasify-pipelines-pas.git
+    branch: master
+
+jobs:
+- name: terraform
+  serial: true
+  public: false
+  plan:
+    - get: pipelines-source
+    - put: terraform-state
+      params:
+        env_name: ((env_name))
+        terraform_source: pipelines-source/terraform/aws
+        delete_on_failure: false
