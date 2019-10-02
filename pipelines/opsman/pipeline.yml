@@ -1,0 +1,59 @@
+---
+resource_types:
+- name: terraform
+  type: docker-image
+  source:
+    repository: ljfranklin/terraform-resource
+    tag: 0.12.9
+
+- name: pivnet
+  type: docker-image
+  source:
+    repository: pivotalcf/pivnet-resource
+    tag: latest-final
+
+- name: semver-config
+  type: docker-image
+  source:
+    repository: itstarting/semver-config-concourse-resource
+    tag: 1.0.0
+
+resources:
+- name: env-state-aws
+  type: terraform
+  icon: alpha-t-box
+  source:
+    backend_type: s3
+    backend_config:
+      bucket: ((s3_artifact_bucket))
+      key: ((foundation))/terraform.tfstate
+      endpoint: ((s3_endpoint))
+      access_key: ((s3_access_key_id))
+      secret_key: ((s3_secret_access_key))
+    vars:
+      env_name: ((foundation))
+      dns_suffix: ((terraform.aws.dns_suffix))
+      hosted_zone: ((terraform.aws.hosted_zone))
+      region: ((region))
+      availability_zones: ((terraform.aws.availability_zones))
+      rds_instance_count: ((terraform.aws.rds_instance_count))
+
+      iam_users: false
+      ops_manager_vm: false
+    env:
+      AWS_ACCESS_KEY_ID: ((secrets.access_key_id))
+      AWS_SECRET_ACCESS_KEY: ((secrets.secret_access_key))
+      AWS_DEFAULT_REGION: ((region))
+
+credhub-interpolate: &credhub-interpolate
+  image: platform-automation-image
+  file: platform-automation-tasks/tasks/credhub-interpolate.yml
+  input_mapping:
+    files: configuration
+  params:
+    CREDHUB_SERVER: ((credhub.server))
+    CREDHUB_CA_CERT: ((credhub.ca_cert))
+    CREDHUB_CLIENT: ((credhub.client))
+    CREDHUB_SECRET: ((credhub.secret))
+    PREFIX: /concourse/((foundation))
+    INTERPOLATION_PATHS: ((credhub.interpolate_folders))
