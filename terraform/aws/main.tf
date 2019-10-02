@@ -21,6 +21,6 @@ module "acme" {
   source = "github.com/nthomson-pivotal/paasify-core//acme/aws"
 
   dns_zone_id        = module.infra.zone_id
-  common_ame         = module.ops_manager.dns
+  opsmanager_domain  = module.ops_manager.dns
   additional_domains = ["*.apps.${local.base_domain}", "*.sys.${local.base_domain}", "*.uaa.sys.${local.base_domain}", "*.login.sys.${local.base_domain}"]
 }
