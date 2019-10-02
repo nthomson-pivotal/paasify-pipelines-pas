@@ -10,5 +10,9 @@ inputs:
   - name: terraform-state
 outputs:
   - name: interpolated-templates
+params:
+  AWS_ACCESS_KEY_ID:
+  AWS_SECRET_ACCESS_KEY:
 run:
   path: paasify-pipelines-pas/tasks/interpolate.sh
+  
