@@ -24,3 +24,15 @@ module "acme" {
   opsmanager_domain  = module.ops_manager.dns
   additional_domains = ["*.apps.${local.base_domain}", "*.sys.${local.base_domain}", "*.uaa.sys.${local.base_domain}", "*.login.sys.${local.base_domain}"]
 }
+
+data "aws_route53_zone" "selected" {
+  name = "${var.dns_suffix}."
+}
+
+module "ns_record" {
+  source = "../paving-pas/aws/modules/add_ns_to_hosted_zone"
+
+  top_level_zone_id = data.aws_route53_zone.selected.zone_id
+  zone_name         = ${local.base_domain}
+  name_servers      = module.infra.name_servers
+}
