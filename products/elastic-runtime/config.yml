@@ -23,16 +23,16 @@ product-properties:
     value:
     - certificate:
         cert_pem: |
-{{indent 8 (ds "data").tls_cert}}
+{{indent 10 (ds "data").tls_cert}}
         private_key_pem: |
-{{indent 8 (ds "data").tls_cert_key}}
+{{indent 10 (ds "data").tls_cert_key}}
       name: default
   .uaa.service_provider_key_credentials:
     value:
         cert_pem: |
-{{indent 8 (ds "data").tls_cert}}
+{{indent 10 (ds "data").tls_cert}}
         private_key_pem: |
-{{indent 8 (ds "data").tls_cert_key}}
+{{indent 10 (ds "data").tls_cert_key}}
 network-properties:
   network:
     name: pas
