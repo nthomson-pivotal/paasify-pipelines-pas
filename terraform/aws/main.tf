@@ -1,6 +1,6 @@
 locals {
-  om_password              = "${var.opsman_password == "" ? random_string.opsman_password.result : var.opsman_password}"
-  om_decryption_passphrase = "${var.opsman_decryption_passphrase == "" ? random_string.opsman_password.result : var.opsman_decryption_passphrase}"
+  opsman_password              = "${var.opsman_password == "" ? random_string.opsman_password.result : var.opsman_password}"
+  opsman_decryption_passphrase = "${var.opsman_decryption_passphrase == "" ? random_string.opsman_password.result : var.opsman_decryption_passphrase}"
 }
 
 resource "random_string" "opsman_password" {
