@@ -23,6 +23,7 @@ product-properties:
     - certificate:
         cert_pem: |
 {{indent 10 (ds "data").tls_cert}}
+{{indent 10 (ds "data").tls_ca_cert}}
         private_key_pem: |
 {{indent 10 (ds "data").tls_cert_key}}
       name: default
@@ -30,6 +31,7 @@ product-properties:
     value:
         cert_pem: |
 {{indent 10 (ds "data").tls_cert}}
+{{indent 10 (ds "data").tls_ca_cert}}
         private_key_pem: |
 {{indent 10 (ds "data").tls_cert_key}}
 network-properties:
