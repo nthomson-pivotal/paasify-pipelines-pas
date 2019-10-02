@@ -134,6 +134,14 @@ jobs:
       env: globals-interpolated
     params:
       ENV_FILE: env.yml
+  - task: upload-stemcell
+    image: platform-automation-image
+    file: platform-automation-tasks/tasks/upload-stemcell.yml
+    input_mapping:
+      product: downloaded-stemcell
+      env: globals-interpolated
+    params:
+      ENV_FILE: env.yml
   - task: stage-product
     image: platform-automation-image
     file: platform-automation-tasks/tasks/stage-product.yml
@@ -187,7 +195,7 @@ jobs:
       CONFIG_FILE: config.yml
       ENV_FILE: env.yml
 
-- name: apply-director-changes
+- name: apply-changes
   serial: true
   plan:
   - aggregate:
@@ -215,9 +223,9 @@ jobs:
       PIVNET_TOKEN: ((pivnet_token))
       AWS_ACCESS_KEY_ID: ((admin_access_key_id))
       AWS_SECRET_ACCESS_KEY: ((admin_secret_access_key))
-  - task: apply-director-changes
+  - task: apply-changes
     image: platform-automation-image
-    file: platform-automation-tasks/tasks/apply-director-changes.yml
+    file: platform-automation-tasks/tasks/apply-changes.yml
     input_mapping:
       env: globals-interpolated
     params:
