@@ -126,14 +126,14 @@ jobs:
     params:
       CONFIG_FILE: semver-config.yaml
       VARS_FILES: secrets/global.yml
-  #- task: upload-product
-  #  image: platform-automation-image
-  #  file: platform-automation-tasks/tasks/upload-product.yml
-  #  input_mapping:
-  #    product: downloaded-product
-  #    env: globals-interpolated
-  #  params:
-  #    ENV_FILE: env.yml
+  - task: upload-product
+    image: platform-automation-image
+    file: platform-automation-tasks/tasks/upload-product.yml
+    input_mapping:
+      product: downloaded-product
+      env: globals-interpolated
+    params:
+      ENV_FILE: env.yml
   - task: upload-stemcell
     image: platform-automation-image
     file: platform-automation-tasks/tasks/upload-stemcell.yml
