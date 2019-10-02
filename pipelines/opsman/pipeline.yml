@@ -108,18 +108,18 @@ jobs:
     - get: terraform-state
       trigger: true
       passed: [terraform]
-  - task: interpolate-config
-    file: pipelines-source/tasks/interpolate.yml
-    input_mapping:
-      paasify-pipelines-pas: pipelines-source
-      templates: product-config-opsman
-      terraform-state: terraform-state
-    output_mapping:
-      interpolated-templates: opsman-interpolated
-    params:
-      AWS_ACCESS_KEY_ID: ((admin_access_key_id))
-      AWS_SECRET_ACCESS_KEY: ((admin_secret_access_key))
-  - task: interpolate-config
+#  - task: interpolate-config
+#    file: pipelines-source/tasks/interpolate.yml
+#    input_mapping:
+#      paasify-pipelines-pas: pipelines-source
+#      templates: product-config-opsman
+#      terraform-state: terraform-state
+#    output_mapping:
+#      interpolated-templates: opsman-interpolated
+#    params:
+#      AWS_ACCESS_KEY_ID: ((admin_access_key_id))
+#      AWS_SECRET_ACCESS_KEY: ((admin_secret_access_key))
+  - task: interpolate-vars
     file: pipelines-source/tasks/interpolate.yml
     input_mapping:
       paasify-pipelines-pas: pipelines-source
@@ -128,8 +128,10 @@ jobs:
     output_mapping:
       interpolated-templates: vars-interpolated
     params:
-      TEMPLATE_PATH: vars
+      TEMPLATE_PATH: products/opsman/vars
       PIVNET_TOKEN: ((pivnet_token))
+      AWS_ACCESS_KEY_ID: ((admin_access_key_id))
+      AWS_SECRET_ACCESS_KEY: ((admin_secret_access_key))
   - task: download-product
     image: platform-automation-image
     file: platform-automation-tasks/tasks/download-product.yml
@@ -138,3 +140,15 @@ jobs:
       vars: vars-interpolated
     params:
       CONFIG_FILE: semver-config.yaml
+      VARS_FILES: vars/vars.yml
+  - task: create-vm
+    image: platform-automation-image
+    file: platform-automation-tasks/tasks/create-vm.yml
+    input_mapping:
+      image: downloaded-product
+      state: configuration
+      config: pipelines-source
+      vars: interpolated-files
+    params:
+      OPSMAN_CONFIG_FILE: pipelines/opsman/config/opsman.yml
+      STATE_FILE: ((env_name))/state/state.yml
