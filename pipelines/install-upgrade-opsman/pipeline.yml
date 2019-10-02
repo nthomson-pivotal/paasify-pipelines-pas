@@ -122,7 +122,6 @@ jobs:
       passed: [terraform]
     - get: configuration-source
       passed: [terraform]
-      trigger: true
     - get: vm-state
   - task: interpolate-global
     file: pipelines-source/tasks/interpolate.yml
