@@ -99,7 +99,6 @@ jobs:
   plan:
     - get: pipelines-source
     - get: configuration-source
-      trigger: true
     - put: terraform-state
       params:
         env_name: ((env_name))
@@ -120,6 +119,7 @@ jobs:
       params: {unpack: true}
     - get: terraform-state
       passed: [terraform]
+      trigger: true
     - get: configuration-source
       passed: [terraform]
     - get: vm-state
