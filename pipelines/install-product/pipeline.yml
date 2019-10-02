@@ -95,7 +95,6 @@ jobs:
       params: {unpack: true}
     - get: terraform-state
     - get: configuration-source
-      trigger: true
   - task: interpolate-global
     file: pipelines-source/tasks/interpolate.yml
     input_mapping:
@@ -165,7 +164,6 @@ jobs:
     - get: terraform-state
       passed: [install-tile]
     - get: configuration-source
-      trigger: true
       passed: [install-tile]
   - task: interpolate-global
     file: pipelines-source/tasks/interpolate.yml
@@ -211,7 +209,6 @@ jobs:
     - get: terraform-state
       passed: [configure-tile]
     - get: configuration-source
-      trigger: true
       passed: [configure-tile]
   - task: interpolate-global
     file: pipelines-source/tasks/interpolate.yml
