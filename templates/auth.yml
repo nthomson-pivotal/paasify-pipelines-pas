@@ -1,5 +1,0 @@
----
-username: {{ (ds "data").opsman_username }}
-password: {{ (ds "data").opsman_password }}
-
-decryption-passphrase: {{ (ds "data").opsman_decryption_passphrase }}
