@@ -123,6 +123,9 @@ jobs:
       terraform-state: terraform-state
     output_mapping:
       interpolated-config: templates-interpolated
+    params:
+      AWS_ACCESS_KEY_ID: ((admin_access_key_id))
+      AWS_SECRET_ACCESS_KEY: ((admin_secret_access_key))
   #- task: download-product
   #  image: platform-automation-image
   #  file: platform-automation-tasks/tasks/download-product.yml
