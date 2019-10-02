@@ -79,6 +79,16 @@ resources:
     bucket: ((s3_artifact_bucket))
     regexp: .*image-(.*).tgz
 
+- name: vm-state
+  type: s3
+  source:
+    region_name: ((s3_region))
+    access_key_id: ((s3_access_key_id))
+    secret_access_key: ((s3_secret_access_key))
+    bucket: ((s3_artifact_bucket))
+    versioned_file: vm-state/((env_name))/state.yml
+    initial_version: "0"
+
 jobs:
 - name: terraform
   serial: true
@@ -95,7 +105,7 @@ jobs:
         var_files:
         - configuration-source/((env_name))/terraform.tfvars
 
-- name: create-opsman-and-configure-auth
+- name: create-opsman
   serial: true
   plan:
   - aggregate:
@@ -108,17 +118,10 @@ jobs:
     - get: terraform-state
       trigger: true
       passed: [terraform]
-#  - task: interpolate-config
-#    file: pipelines-source/tasks/interpolate.yml
-#    input_mapping:
-#      paasify-pipelines-pas: pipelines-source
-#      templates: product-config-opsman
-#      terraform-state: terraform-state
-#    output_mapping:
-#      interpolated-templates: opsman-interpolated
-#    params:
-#      AWS_ACCESS_KEY_ID: ((admin_access_key_id))
-#      AWS_SECRET_ACCESS_KEY: ((admin_secret_access_key))
+    - get: configuration-source
+      trigger: true
+      passed: [terraform]
+    - get: vm-state
   - task: interpolate-global
     file: pipelines-source/tasks/interpolate.yml
     input_mapping:
@@ -151,18 +154,34 @@ jobs:
     input_mapping:
       config: product-config-opsman
       vars: vars-interpolated
-      globals: globals-interpolated
+      secrets: globals-interpolated
     params:
       CONFIG_FILE: semver-config.yaml
-      VARS_FILES: vars/vars.yml globals/globals.yml
+      VARS_FILES: vars/vars.yml secrets/global.yml
   - task: create-vm
     image: platform-automation-image
     file: platform-automation-tasks/tasks/create-vm.yml
     input_mapping:
       image: downloaded-product
-      state: configuration
+      state: vm-state
       config: pipelines-source
-      vars: interpolated-files
+      vars: vars-interpolated
     params:
-      OPSMAN_CONFIG_FILE: pipelines/opsman/config/opsman.yml
-      STATE_FILE: ((env_name))/state/state.yml
+      OPSMAN_CONFIG_FILE: products/opsman/config.yml
+      STATE_FILE: state.yml
+      VARS_FILES: vars/vars.yml
+    on_success:
+      do:
+        - put: vm-state
+          params:
+            file: generated-state/state.yml
+  - task: configure-authentication
+    image: platform-automation-image
+    file: platform-automation-tasks/tasks/configure-authentication.yml
+    attempts: 10
+    input_mapping:
+      env: pipelines-source
+      config: interpolated-files
+    params:
+      ENV_FILE: templates/env.yml
+      AUTH_CONFIG_FILE: ((foundation))/config/auth.yml
