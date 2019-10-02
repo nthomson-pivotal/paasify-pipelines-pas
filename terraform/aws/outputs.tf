@@ -7,5 +7,6 @@ output "opsman_password" {
 }
 
 output "opsman_decryption_passphrase" {
-  value = local.opsman_decryption_passphrase
+  value       = local.opsman_decryption_passphrase
+  sensitive   = true
 }
