@@ -1,0 +1,49 @@
+product-name: pivotal-mysql
+product-properties:
+  .properties.plan1_selector.single_node.az_multi_select:
+    value:
+      {{range (ds "data").azs}}
+      - name: {{.}}
+      {{end}}
+  .properties.plan2_selector.single_node.az_multi_select:
+    value:
+      {{range (ds "data").azs}}
+      - name: {{.}}
+      {{end}}
+  .properties.plan3_selector.single_node.az_multi_select:
+    value:
+      {{range (ds "data").azs}}
+      - name: {{.}}
+      {{end}}
+  .properties.syslog_migration_selector:
+    value: disabled
+  .properties.backups_selector:
+    value: SCP Backups
+  .properties.backups_selector.scp.user:
+    value: 'null'
+  .properties.backups_selector.scp.key:
+    value:
+      secret: 'null'
+  .properties.backups_selector.scp.server:
+    value: 'null'
+  .properties.backups_selector.scp.destination:
+    value: 'null'
+  .properties.backups_selector.scp.port:
+    value: '1234'
+  .properties.backups_selector.scp.cron_schedule:
+    value: 0 0 5 31 2 ?
+  .properties.global_recipient_email:
+    value: none@localhost
+  .properties.deprecated_bindings_string:
+    value: X
+network-properties:
+  network:
+    name: pas
+  service_network:
+    name: services
+  other_availability_zones:
+    {{range (ds "data").azs}}
+    - name: {{.}}
+    {{end}}
+  singleton_availability_zone:
+    name: {{index (ds "data").azs 0}}
