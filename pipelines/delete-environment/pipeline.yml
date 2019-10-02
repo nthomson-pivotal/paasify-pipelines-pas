@@ -22,6 +22,7 @@ resources:
 - name: terraform-state
   type: terraform
   source:
+    env_name: ((env_name))
     backend_type: s3
     backend_config:
       bucket: ((s3_artifact_bucket))
@@ -116,11 +117,14 @@ jobs:
   plan:
   - aggregate:
     - get: pipelines-source
+      passed: [delete-installation]
     - get: platform-automation-tasks
       params: {unpack: true}
     - get: platform-automation-image
       params: {unpack: true}
     - get: vm-state
+    - get: terraform-state
+      passed: [delete-installation]
   - task: interpolate-global
     file: pipelines-source/tasks/interpolate.yml
     input_mapping:
@@ -164,6 +168,7 @@ jobs:
   public: false
   plan:
     - get: pipelines-source
+      passed: [delete-vm]
     - get: configuration-source
     - put: terraform-state
       params:
