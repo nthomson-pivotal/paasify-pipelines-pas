@@ -25,14 +25,14 @@ resources:
     backend_type: s3
     backend_config:
       bucket: ((s3_artifact_bucket))
-      key: ((foundation))/terraform.tfstate
-      endpoint: ((s3_endpoint))
+      key: ((env_name))/terraform.tfstate
       access_key: ((s3_access_key_id))
       secret_key: ((s3_secret_access_key))
     vars:
-      env_name: ((foundation))
+      env_name: ((env_name))
       dns_suffix: ((dns_suffix))
       region: ((region))
+      ops_manager_ami: ""
     env:
       AWS_ACCESS_KEY_ID: ((admin_access_key_id))
       AWS_SECRET_ACCESS_KEY: ((admin_secret_access_key))
@@ -41,8 +41,43 @@ resources:
 - name: pipelines-source
   type: git
   source:
-    uri: git@github.com:nthomson-pivotal/paasify-pipelines-pas.git
+    uri: https://github.com/nthomson-pivotal/paasify-pipelines-pas.git
     branch: master
+
+- name: configuration-source
+  type: git
+  source:
+    uri: ((configuration_source))
+#    branch: master
+#
+#- name: product-config-opsman
+#  type: semver-config
+#  source:
+#    driver: git
+#    uri: ((configuration_source))
+#    branch: master
+#    config_file: ((env_name))/products.yml
+#    config_path: products.opsman
+#    version_path: products.opsman.product-version
+#    version_pattern: "m.n.p"
+#
+#- name: platform-automation-tasks
+#  type: s3
+#  source:
+#    region_name: ((s3_region))
+#    access_key_id: ((s3_access_key_id))
+#    secret_access_key: ((s3_secret_access_key))
+#    bucket: ((s3_artifact_bucket))
+#    regexp: .*tasks-(.*).zip
+#
+#- name: platform-automation-image
+#  type: s3
+#  source:
+#    region_name: ((s3_region))
+#    access_key_id: ((s3_access_key_id))
+#    secret_access_key: ((s3_secret_access_key))
+#    bucket: ((s3_artifact_bucket))
+#    regexp: .*image-(.*).tgz
 
 jobs:
 - name: terraform
@@ -50,8 +85,48 @@ jobs:
   public: false
   plan:
     - get: pipelines-source
+    - get: configuration-source
+      trigger: true
     - put: terraform-state
       params:
         env_name: ((env_name))
         terraform_source: pipelines-source/terraform/aws
         delete_on_failure: false
+        var_files:
+        - configuration-source/((env_name))/terraform.tfvars
+
+- name: create-opsman-and-configure-auth
+  serial: true
+  plan:
+  - aggregate:
+    - get: terraform-state
+      trigger: true
+      passed: [terraform]
+  - task: show-outputs
+    config:
+      platform: linux
+      inputs:
+        - name: terraform-state
+      run:
+        path: /bin/sh
+        args:
+          - -c
+          - |
+              echo "name: $(cat terraform-state/name)"
+              echo "metadata: $(cat terraform-state/metadata)"
+  - task: interpolate-config
+    file: pcf-automation-source/tasks/interpolate.yml
+    input_mapping:
+      config: configuration
+      terraform-output: env-state-aws
+      certificates: certificates
+    output_mapping:
+      interpolated-config: configuration-interpolated
+  #- task: download-product
+  #  image: platform-automation-image
+  #  file: platform-automation-tasks/tasks/download-product.yml
+  #  input_mapping:
+  #    config: product-config-opsman
+  #    vars: interpolated-files
+  #  params:
+  #    CONFIG_FILE: semver-config.yaml
