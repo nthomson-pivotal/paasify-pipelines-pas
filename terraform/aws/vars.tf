@@ -1,4 +1,4 @@
-variable "opsman_user" {
+variable "opsman_username" {
   default = "admin"
 }
 
