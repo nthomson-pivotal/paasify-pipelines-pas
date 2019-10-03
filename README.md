@@ -1,3 +1,9 @@
+Example config repo: https://github.com/nthomson-pivotal/paasify-pipelines-pas-configuration
+
+```
+credhub set -n /concourse/main/git_private_key -t ssh -p <path to your git ssh private key file>
+```
+
 ```
 fly -t cp set-pipeline -p install-opsman -c pipelines/install-upgrade-opsman/pipeline.yml -l ../paasify-pipelines-pas-configuration/dev/fly.yml
 ```
