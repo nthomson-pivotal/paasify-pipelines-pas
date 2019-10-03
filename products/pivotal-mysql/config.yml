@@ -3,17 +3,17 @@ product-properties:
   .properties.plan1_selector.single_node.az_multi_select:
     value:
       {{range (ds "data").azs}}
-      - name: {{.}}
+      - {{.}}
       {{end}}
   .properties.plan2_selector.single_node.az_multi_select:
     value:
       {{range (ds "data").azs}}
-      - name: {{.}}
+      - {{.}}
       {{end}}
   .properties.plan3_selector.single_node.az_multi_select:
     value:
       {{range (ds "data").azs}}
-      - name: {{.}}
+      - {{.}}
       {{end}}
   .properties.syslog_migration_selector:
     value: disabled
