@@ -250,7 +250,6 @@ jobs:
       params:
         unpack: true
         globs: ["*image*"]
-      params: {unpack: true}
     - get: terraform-state
       passed: [configure-director]
     - get: configuration-source
