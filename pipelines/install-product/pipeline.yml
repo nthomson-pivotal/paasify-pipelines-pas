@@ -64,23 +64,11 @@ resources:
     version_path: products.((product_slug)).product-version
     version_pattern: "m.n.p"
 
-- name: platform-automation-tasks
-  type: s3
+- name: platform-automation
+  type: pivnet
   source:
-    region_name: ((s3_region))
-    access_key_id: ((s3_access_key_id))
-    secret_access_key: ((s3_secret_access_key))
-    bucket: ((s3_artifact_bucket))
-    regexp: .*tasks-(.*).zip
-
-- name: platform-automation-image
-  type: s3
-  source:
-    region_name: ((s3_region))
-    access_key_id: ((s3_access_key_id))
-    secret_access_key: ((s3_secret_access_key))
-    bucket: ((s3_artifact_bucket))
-    regexp: .*image-(.*).tgz
+    api_token: ((pivent_token))
+    product_slug: platform-automation
 
 jobs:
 - name: install-tile
@@ -90,9 +78,15 @@ jobs:
     - get: pipelines-source
     - get: product-config
     - get: platform-automation-tasks
-      params: {unpack: true}
+      resource: platform-automation
+      params:
+        unpack: true
+        globs: ["*tasks*"]
     - get: platform-automation-image
-      params: {unpack: true}
+      resource: platform-automation
+      params:
+        unpack: true
+        globs: ["*image*"]
     - get: terraform-state
     - get: configuration-source
   - task: interpolate-global
@@ -158,9 +152,15 @@ jobs:
     - get: pipelines-source
       #passed: [install-tile]
     - get: platform-automation-tasks
-      params: {unpack: true}
+      resource: platform-automation
+      params:
+        unpack: true
+        globs: ["*image*"]
     - get: platform-automation-image
-      params: {unpack: true}
+      resource: platform-automation
+      params:
+        unpack: true
+        globs: ["*image*"]
     - get: terraform-state
       passed: [install-tile]
     - get: configuration-source
@@ -203,9 +203,15 @@ jobs:
     - get: pipelines-source
       passed: [configure-tile]
     - get: platform-automation-tasks
-      params: {unpack: true}
+      resource: platform-automation
+      params:
+        unpack: true
+        globs: ["*image*"]
     - get: platform-automation-image
-      params: {unpack: true}
+      resource: platform-automation
+      params:
+        unpack: true
+        globs: ["*image*"]
     - get: terraform-state
       passed: [configure-tile]
     - get: configuration-source
