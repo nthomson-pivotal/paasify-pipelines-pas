@@ -64,23 +64,11 @@ resources:
     version_path: products.opsman.product-version
     version_pattern: "m.n.p"
 
-- name: platform-automation-tasks
-  type: s3
+- name: platform-automation
+  type: pivnet
   source:
-    region_name: ((s3_region))
-    access_key_id: ((s3_access_key_id))
-    secret_access_key: ((s3_secret_access_key))
-    bucket: ((s3_artifact_bucket))
-    regexp: .*tasks-(.*).zip
-
-- name: platform-automation-image
-  type: s3
-  source:
-    region_name: ((s3_region))
-    access_key_id: ((s3_access_key_id))
-    secret_access_key: ((s3_secret_access_key))
-    bucket: ((s3_artifact_bucket))
-    regexp: .*image-(.*).tgz
+    api_token: ((pivnet_token))
+    product_slug: platform-automation
 
 - name: vm-state
   type: s3
@@ -114,9 +102,15 @@ jobs:
     - get: pipelines-source
     - get: product-config-opsman
     - get: platform-automation-tasks
-      params: {unpack: true}
+      resource: platform-automation
+      params:
+        unpack: true
+        globs: ["*tasks*"]
     - get: platform-automation-image
-      params: {unpack: true}
+      resource: platform-automation
+      params:
+        unpack: true
+        globs: ["*image*"]
     - get: terraform-state
       passed: [terraform]
       trigger: true
@@ -192,9 +186,15 @@ jobs:
   - aggregate:
     - get: pipelines-source
     - get: platform-automation-tasks
-      params: {unpack: true}
+      resource: platform-automation
+      params:
+        unpack: true
+        globs: ["*tasks*"]
     - get: platform-automation-image
-      params: {unpack: true}
+      resource: platform-automation
+      params:
+        unpack: true
+        globs: ["*image*"]
     - get: terraform-state
       trigger: true
       passed: [create-opsman]
@@ -241,8 +241,15 @@ jobs:
   - aggregate:
     - get: pipelines-source
     - get: platform-automation-tasks
-      params: {unpack: true}
+      resource: platform-automation
+      params:
+        unpack: true
+        globs: ["*tasks*"]
     - get: platform-automation-image
+      resource: platform-automation
+      params:
+        unpack: true
+        globs: ["*image*"]
       params: {unpack: true}
     - get: terraform-state
       passed: [configure-director]
