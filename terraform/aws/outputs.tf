@@ -25,5 +25,5 @@ output "tls_cert_key" {
 }
 
 output "tls_cert_ca" {
-  value = chomp(module.acme.cert_ca)
+  value = replace(chomp(module.acme.cert_ca), "\n", "\\n")
 }
