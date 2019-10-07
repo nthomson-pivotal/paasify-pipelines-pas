@@ -17,11 +17,11 @@ output "env_name" {
 }
 
 output "tls_cert" {
-  value = chomp(module.acme.cert_full_chain)
+  value = replace(chomp(module.acme.cert_full_chain), "\n", "\\n")
 }
 
 output "tls_cert_key" {
-  value = chomp(module.acme.cert_key)
+  value = replace(chomp(module.acme.cert_key), "\n", "\\n")
 }
 
 output "tls_cert_ca" {
