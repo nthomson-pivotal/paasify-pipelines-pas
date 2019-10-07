@@ -156,7 +156,7 @@ jobs:
       resource: platform-automation
       params:
         unpack: true
-        globs: ["*image*"]
+        globs: ["*tasks*"]
     - get: platform-automation-image
       resource: platform-automation
       params:
@@ -207,7 +207,7 @@ jobs:
       resource: platform-automation
       params:
         unpack: true
-        globs: ["*image*"]
+        globs: ["*tasks*"]
     - get: platform-automation-image
       resource: platform-automation
       params:
