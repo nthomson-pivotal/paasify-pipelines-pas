@@ -67,8 +67,9 @@ resources:
 - name: platform-automation
   type: pivnet
   source:
-    api_token: ((pivent_token))
+    api_token: ((pivnet_token))
     product_slug: platform-automation
+    product_version: "4.0.1"
 
 jobs:
 - name: install-tile
