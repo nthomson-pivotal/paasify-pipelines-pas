@@ -53,6 +53,6 @@ resource-config:
   compute:
     instances: 1
   blobstore:
-    instances: 0
+    instances: 1
   mysql_monitor:
-    instances: 0
+    instances: 1
