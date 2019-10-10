@@ -6,7 +6,7 @@ properties-configuration:
     ntp_servers_string: 169.254.169.123
     resurrector_enabled: true
     post_deploy_enabled: true
-    retry_bosh_deploys: true
+    retry_bosh_deploys: false
   iaas_configuration:
     iam_instance_profile: {{(ds "data").ops_manager_iam_instance_profile_name}}
     vpc_id: {{(ds "data").vpc_id}}
