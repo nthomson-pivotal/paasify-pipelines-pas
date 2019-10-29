@@ -8,6 +8,10 @@ product-properties:
     value: true
   .properties.haproxy_forward_tls:
     value: disable
+  .properties.tcp_routing:
+    value: enable
+  .properties.tcp_routing.enable.reservable_ports:
+    value: 1024-1033
   .properties.security_acknowledgement:
     value: X
   .mysql_monitor.recipient_email:
@@ -50,6 +54,12 @@ resource-config:
     - alb:{{.}}
     {{end}}
     additional_vm_extensions: [web_lb_security_groups]
+  tcp_router:
+    elb_names:
+    {{range (ds "data").tcp_target_groups}}
+    - alb:{{.}}
+    {{end}}
+    additional_vm_extensions: [tcp_lb_security_groups]
   compute:
     instances: 1
   blobstore:
